@@ -293,7 +293,7 @@ export default function App() {
     [game.cities],
   );
   const playerCityIds = useMemo(() => new Set(playerCities.map((city) => city.id)), [playerCities]);
-  const homeCity = playerCities[0];
+  const homeCity = playerCities.length > 0 ? playerCities[0] : undefined;
   const totalTroops = useMemo(
     () => playerCities.reduce((sum, city) => sum + city.troops, 0),
     [playerCities],
@@ -890,7 +890,11 @@ export default function App() {
             rubyStyle={styles.headerRuby}
           />
           <FuriganaText
-            segments={[seg('所属城', 'しょぞくじょう'), seg(': '), seg(homeCity?.name ?? '滅亡', homeCity?.ruby)]}
+            segments={[
+              seg('所属城', 'しょぞくじょう'),
+              seg(': '),
+              homeCity ? seg(homeCity.name, homeCity.ruby) : seg('滅亡', 'めつぼう'),
+            ]}
             rubyStyle={styles.smallRuby}
             textStyle={styles.cardText}
           />
