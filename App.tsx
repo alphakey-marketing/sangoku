@@ -44,6 +44,7 @@ type LogEntry = {
 
 type GameState = {
   started: boolean;
+  homeCityId: string;
   year: number;
   seasonIndex: number;
   gold: number;
@@ -173,6 +174,7 @@ function seg(base: string, ruby?: string): FuriganaSegment {
 function createInitialState(): GameState {
   return {
     started: false,
+    homeCityId: 'chengdu',
     year: 1,
     seasonIndex: 0,
     gold: 320,
@@ -293,7 +295,10 @@ export default function App() {
     [game.cities],
   );
   const playerCityIds = useMemo(() => new Set(playerCities.map((city) => city.id)), [playerCities]);
-  const homeCity = playerCities.length > 0 ? playerCities[0] : undefined;
+  const homeCity =
+    game.cities.find(
+      (city) => city.id === game.homeCityId && city.faction === playerFaction.name,
+    ) ?? playerCities[0];
   const totalTroops = useMemo(
     () => playerCities.reduce((sum, city) => sum + city.troops, 0),
     [playerCities],
@@ -392,7 +397,8 @@ export default function App() {
         return appendLog(next, [seg('攻撃', 'こうげき'), seg(' 可能', 'かのう'), seg(' な '), seg('城', 'しろ'), seg(' がありません')]);
       }
 
-      const attackPower = attacker.troops + current.officers[0].leadership * 110;
+      const commanderLeadership = current.officers[0]?.leadership ?? 70;
+      const attackPower = attacker.troops + commanderLeadership * 110;
       const defensePower = target.troops + target.defense * 130;
 
       attacker.troops = Math.max(1800, attacker.troops - 1200);
@@ -630,7 +636,7 @@ export default function App() {
         next = appendLog(next, [seg(defender.name, defender.ruby), seg(' は '), seg('防衛', 'ぼうえい'), seg(' に成功', 'にせいこう'), seg(' した')]);
       });
 
-      const event = eventTemplates[(current.year + current.seasonIndex) % eventTemplates.length];
+      const event = eventTemplates[Math.floor(Math.random() * eventTemplates.length)];
       next = appendLog(next, event);
 
       if (event[0].base === '豊作') {

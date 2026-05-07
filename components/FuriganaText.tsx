@@ -23,7 +23,7 @@ export function FuriganaText({
   return (
     <View style={[styles.row, align === 'center' && styles.center, containerStyle]}>
       {segments.map((segment, index) => (
-        <View key={`${segment.base}-${segment.ruby ?? 'plain'}-${index}`} style={styles.segment}>
+        <View key={index} style={styles.segment}>
           <Text style={[styles.ruby, rubyStyle]}>{segment.ruby ?? ' '}</Text>
           <Text style={[styles.base, textStyle]}>{segment.base}</Text>
         </View>
